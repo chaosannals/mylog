@@ -4,3 +4,4 @@ __pycache__
 !__init__.py
 *_ui.py
 *_rc.py
+*_cnf.py
