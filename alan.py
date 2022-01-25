@@ -24,7 +24,7 @@ wt = ixt.writer()
 wt.add_document(
     testname='aaaaa222',
     description='aaaaa content',
-    tags=['aaa', 'bbb', ]
+    tags=['aaa', 'bbb', ] # 官方示例是 空格或逗号 隔开的字符串。
 )
 wt.commit()
 
