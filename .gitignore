@@ -1,5 +1,6 @@
 /.*/
 /tasks/*.py
+/rt/
 __pycache__
 !__init__.py
 *_ui.py
