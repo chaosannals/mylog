@@ -58,14 +58,16 @@ with ixt.searcher() as searcher:
         ixt.schema
     ).parse('中文')
     rs = searcher.search(query)
-    print([r for r in rs])
+    r1 = [r for r in rs]
+    print(f'长度： {len(r1)} \r\n {r1}')
 
     q2 = QueryParser(
         'tags',
         ixt.schema
     ).parse('bbb')
     rs2 = searcher.search(q2)
-    print([r for r in rs2])
+    r2 = [r for r in rs2]
+    print(f'长度： {len(r2)} \r\n {r2}')
 
 
 ####################
