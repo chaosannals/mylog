@@ -1,4 +1,5 @@
 import os
+import json
 from time import time_ns
 from peewee import *
 from whoosh.index import create_in, open_dir
@@ -7,10 +8,12 @@ from whoosh.analysis import StemmingAnalyzer
 from whoosh.qparser import QueryParser
 from zha import zh_analyzer
 
+# stored=False 只有索引，查询结果没有该值。
 tester = Schema(
-    testname=ID(unique=True,stored=True),
-    description=TEXT(stored=True, analyzer=zh_analyzer()),
-    tags=KEYWORD
+    testname=ID(unique=True, stored=False),
+    description=TEXT(stored=False, analyzer=zh_analyzer()),
+    tags=KEYWORD(stored=False),
+    all=STORED()
 )
 
 ixt_dir = 'rt/tester'
@@ -27,29 +30,34 @@ wt = ixt.writer()
 with wt.group():
     s = time_ns()
     for i in range(10):
-        wt.add_document(
-            testname=f'G文档{s + i}',
-            description=f'G文档描述 {s} {i}',
-            tags='aaa bbb',
-        )
-wt.add_document(
-    testname='aaaaa222',
-    description='中文描述分词content',
-    tags=['aaa', 'bbb', ] # 官方示例是 空格或逗号 隔开的字符串。列表是多添加的，默认取了第一个。
-)
-wt.update_document(
-    testname='aaaaa222',
-    description='更新后32中文描述分词content',
-    tags='bbb ccc'
-)
+        ai = {
+            'testname':f'G文档{s + i}',
+            'description':f'G文档描述 {s} {i}',
+            'tags':'aaa bbb',
+        }
+        wt.add_document(all=json.dumps(ai, ensure_ascii=False), **ai)
+d1 = {
+    'testname':'aaaaa222',
+    'description':'中文描述分词content',
+    'tags': ['aaa', 'bbb', ] # 官方示例是 空格或逗号 隔开的字符串。列表是多添加的，默认取了第一个。
+}
+wt.add_document(all=json.dumps(d1, ensure_ascii=False), **d1)
+
+u1 = {
+    'testname':'aaaaa222',
+    'description':'更新后32中文描述分词content',
+    'tags':'bbb ccc'
+}
+wt.update_document(all=json.dumps(u1, ensure_ascii=False),**u1)
 
 # 使用 更新时没有会添加，所以使用 update_document 添加文档更符合常规。
 # 但是会更慢，在自动生成唯一ID 的场景不适用。
-wt.update_document(
-    testname='aaaaa3333',
-    description='更新后33333333中文描述分词content',
-    tags='bbb ccc'
-)
+u2 = {
+    'testname':'aaaaa3333',
+    'description':'更新后33333333中文描述分词content',
+    'tags':'bbb ccc'
+}
+wt.update_document(all=json.dumps(u2, ensure_ascii=False),**u2)
 wt.commit()
 
 with ixt.searcher() as searcher:
@@ -59,7 +67,9 @@ with ixt.searcher() as searcher:
     ).parse('中文')
     rs = searcher.search(query)
     r1 = [r for r in rs]
-    print(f'长度： {len(r1)} \r\n {r1}')
+    print(f'长度： {len(r1)}')
+    for r1r in r1:
+        print(r1r)
 
     q2 = QueryParser(
         'tags',
@@ -67,7 +77,9 @@ with ixt.searcher() as searcher:
     ).parse('bbb')
     rs2 = searcher.search(q2)
     r2 = [r for r in rs2]
-    print(f'长度： {len(r2)} \r\n {r2}')
+    print(f'长度： {len(r2)}')
+    for r2r in r2:
+        print(r2r)
 
 
 ####################
