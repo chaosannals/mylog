@@ -1,0 +1,12 @@
+from whoosh.fields import TEXT
+from iikit import open_collection
+from zha import zh_analyzer
+
+def test():
+    dc = open_collection('iikitt')
+    dc.add_index('name_index', TEXT(stored=False, analyzer=zh_analyzer()))
+    
+
+
+if '__main__' == __name__:
+    test()

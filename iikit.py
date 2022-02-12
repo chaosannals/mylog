@@ -28,6 +28,7 @@ class DocCollection:
         with self.indexer.writer() as w:
             w.optimize = True
             w.add_field(f, ft)
+        
 
     def del_index(self, f: str):
         with self.indexer.writer() as w:
@@ -46,18 +47,29 @@ class DocCollection:
         with self.indexer.writer() as w:
             for k, v in argkw.items():
                 setattr(w, k, v)
+            for k, v in self.indexer.schema.items():
+                if k.endswith('_index'):
+                    ik = k[:-6]
+                    if ik in data:
+                        d[k] = data[ik]
             w.add_document(**d)
 
     def add_docs(self, rows, **argkw):
+        fs = self.indexer.schema.items()
         with self.indexer.writer() as w:
             for k, v in argkw.items():
                 setattr(w, k, v)
             for row in rows:
                 d = self._new_doc(row)
+                for k, v in fs:
+                    if k.endswith('_index'):
+                        ik = k[:-6]
+                        if ik in row:
+                            d[k] = row[ik]
                 w.add_document(**d)
 
 
-def new_collection(name: str) -> DocCollection:
+def open_collection(name: str) -> DocCollection:
     p = f'rt/{name}'
     if not os.path.isdir(p):
         os.makedirs(p)
@@ -68,7 +80,7 @@ def new_collection(name: str) -> DocCollection:
 
 
 def test():
-    dc = new_collection('iikitt')
+    dc = open_collection('iikitt')
     dc.add_index('key', TEXT())
     dc.del_index('key')
     for p in glob('rtd/*/*.json'):
