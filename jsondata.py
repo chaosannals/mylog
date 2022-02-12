@@ -24,6 +24,8 @@ def slz_data(row: dict):
 
 def uns_data(row: dict):
     for rk, rv in row.items():
+        if rv is None:
+            continue
         tv = rv.split(':', 1)
         t = tv[0]
         v = tv[1]
@@ -39,6 +41,12 @@ def uns_data(row: dict):
             row[rk] = Decimal(v)
         elif t == 'b':
             row[rk] = bytes.fromhex(v)
+
+def load_jsondata(p):
+    with open(p, 'r', encoding='utf8') as r:
+        rows = json.loads(r.read())
+        return [uns_data(row) for row in rows]
+
 
 def dbkit_connect():
     return pymysql.connect(
