@@ -41,6 +41,7 @@ def uns_data(row: dict):
             row[rk] = Decimal(v)
         elif t == 'b':
             row[rk] = bytes.fromhex(v)
+    return row
 
 def load_jsondata(p):
     with open(p, 'r', encoding='utf8') as r:

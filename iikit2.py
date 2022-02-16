@@ -4,7 +4,7 @@ from zha import zh_analyzer
 
 def test():
     dc = open_collection('iikitt')
-    dc.add_index('name_index', TEXT(stored=False, analyzer=zh_analyzer()))
+    dc.add_index('name', TEXT(stored=False, analyzer=zh_analyzer()))
     
 
 

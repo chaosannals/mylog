@@ -69,7 +69,7 @@ with ixt.searcher() as searcher:
     r1 = [r for r in rs]
     print(f'长度： {len(r1)}')
     for r1r in r1:
-        print(r1r)
+        print(r1r.docnum, r1r)
 
     q2 = QueryParser(
         'tags',
@@ -79,7 +79,7 @@ with ixt.searcher() as searcher:
     r2 = [r for r in rs2]
     print(f'长度： {len(r2)}')
     for r2r in r2:
-        print(r2r)
+        print(r2r.docnum, r2r)
 
 
 ####################
