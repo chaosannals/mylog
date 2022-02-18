@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from bson import Decimal128
 import os
 import json
 import pymysql
@@ -43,11 +44,36 @@ def uns_data(row: dict):
             row[rk] = bytes.fromhex(v)
     return row
 
+def uns2_data(row: dict):
+    for rk, rv in row.items():
+        if rv is None:
+            continue
+        tv = rv.split(':', 1)
+        t = tv[0]
+        v = tv[1]
+        if t == 'dt':
+            row[rk] = datetime.strptime(v, '%Y-%m-%d %H:%M:%S')
+        elif t == 's':
+            row[rk] = v
+        elif t == 'i':
+            row[rk] = int(v)
+        elif t == 'f':
+            row[rk] = float(v)
+        elif t == 'n':
+            row[rk] = Decimal128(v)
+        elif t == 'b':
+            row[rk] = bytes.fromhex(v)
+    return row
+
 def load_jsondata(p):
     with open(p, 'r', encoding='utf8') as r:
         rows = json.loads(r.read())
         return [uns_data(row) for row in rows]
 
+def load2_jsondata(p):
+    with open(p, 'r', encoding='utf8') as r:
+        rows = json.loads(r.read())
+        return [uns2_data(row) for row in rows]
 
 def dbkit_connect():
     return pymysql.connect(
