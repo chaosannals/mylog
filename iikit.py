@@ -1,9 +1,10 @@
 import os
-import json
 import uuid
+from time import time
 from glob import glob
 from whoosh.fields import SchemaClass, FieldType, ID, STORED, TEXT, KEYWORD
 from whoosh.index import create_in, open_dir, FileIndex
+from whoosh.qparser import QueryParser
 from jsondata import load_jsondata
 
 
@@ -30,8 +31,8 @@ class DocCollection:
             w.optimize = True
             w.add_field(fi, ft)
         # 遍历更新所有索引
-        with self.indexer.reader() as r:
-            with self.indexer.writer() as w:
+        with self.indexer.writer() as w:
+            with w.reader() as r:
                 for i, d in r.iter_docs():
                     nd = { 'id': d['id'] }
                     nd[fi] = d['data'][f]
@@ -41,6 +42,25 @@ class DocCollection:
         with self.indexer.writer() as w:
             w.optimize = True
             w.remove_field(f)
+
+    def optimize(self):
+        with self.indexer.writer() as w:
+            w.optimize = True
+
+    def search(self, text, field='name', limit=30):
+        lt = time()
+        with self.indexer.searcher() as s:
+            qt = time()
+            p = QueryParser(f'{field}_index', schema=self.indexer.schema)
+            q = p.parse(text)
+            st = time()
+            rows = s.search(q, limit=limit)
+            et = time()
+            rs = [r.get('data')[field] for r in rows]
+            ot = time()
+            for r in rs:
+                print(r)
+            print(f'l: {qt - lt:.6f}s | q: {st - qt:.6f}s | s: {et - st:.6f}s | o: {ot - et:.6f}s')
 
     @staticmethod
     def _new_doc(data):
