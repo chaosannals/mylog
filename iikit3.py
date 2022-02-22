@@ -7,9 +7,15 @@ from zha import zh_analyzer
 
 def test():
     dc = open_collection('iikitt')
-    dc.search('积木', limit=1000)
-    dc.search('泡泡', limit=1000)
-    dc.search('风车', limit=1000)
+    r1 = dc.search('积木', 'name', pagenum=30, pagelen=100)
+    for r in r1:
+        print(r['name'])
+    r2 = dc.search('泡泡', 'name', pagenum=60, pagelen=100)
+    for r in r2:
+        print(r['name'])
+    r3 = dc.search('风车', 'name', pagenum=100, pagelen=100)
+    for r in r3:
+        print(r['name'])
     
 
 

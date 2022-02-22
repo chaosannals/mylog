@@ -47,20 +47,22 @@ class DocCollection:
         with self.indexer.writer() as w:
             w.optimize = True
 
-    def search(self, text, field='name', limit=30):
+    def search(self, text, field='name', pagenum=1, pagelen=30):
         lt = time()
         with self.indexer.searcher() as s:
             qt = time()
-            p = QueryParser(f'{field}_index', schema=self.indexer.schema)
+            p = QueryParser(f'{field}_index', self.indexer.schema)
             q = p.parse(text)
             st = time()
-            rows = s.search(q, limit=limit)
+            rows = s.search_page(q, pagenum, pagelen=pagelen)
+            # rows = s.search(q, limit=30)
             et = time()
-            rs = [r.get('data')[field] for r in rows]
+            rs = [r.get('data') for r in rows]
             ot = time()
-            for r in rs:
-                print(r)
+            # for r in rs:
+            #     print(r)
             print(f'l: {qt - lt:.6f}s | q: {st - qt:.6f}s | s: {et - st:.6f}s | o: {ot - et:.6f}s')
+            return rs
 
     @staticmethod
     def _new_doc(data):
@@ -103,6 +105,7 @@ class DocCollection:
                 for k, ik in fs:
                     if ik in row:
                         d[k] = row[ik]
+                        print(f'd: {d}')
                 w.add_document(**d)
 
 
