@@ -97,6 +97,24 @@ def test():
                 'dkak': 3,
                 'dkbk': 'c',
             },
+            {
+                'dkak': 3,
+                'dkbk': ['d', 'c'],
+            },
+            {
+                'dkak': 3,
+                'dkbk': {
+                    'd': 1,
+                    'c': 2,
+                },
+            },
+            {
+                'dkak': 3,
+                'dkbk': {
+                    'd': 3,
+                    'c': 4,
+                },
+            },
         ]
     }
     rs = ii_flat(a)
