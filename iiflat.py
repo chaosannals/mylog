@@ -20,7 +20,7 @@ def ii_flat(data: dict) -> dict:
             for vi in v:
                 if isinstance(vi, dict):
                     for k1, v1 in ii_flat(vi).items():
-                        kk = f'{k}.{k1}'
+                        kk = f'{k}[{k1}]'
                         if kk in r:
                             if isinstance(r[kk], list):
                                 r[kk].append(v1)
@@ -101,7 +101,7 @@ def test():
     }
     rs = ii_flat(a)
     for k, v in rs.items():
-        print(k, v)
+        print(k, ' => ', v)
 
 if '__main__' == __name__:
     test()
