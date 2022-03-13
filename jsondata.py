@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from decimal import Decimal
 from bson import Decimal128
 import os
@@ -11,6 +11,8 @@ def slz_data(row: dict):
     for rk, rv in row.items():
         if isinstance(rv, datetime):
             row[rk] = f'dt:{rv.strftime("%Y-%m-%d %H:%M:%S")}'
+        elif isinstance(rv, date):
+            row[rk] = f'd:{rv.strftime("%Y-%m-%d")}'
         elif isinstance(rv, str):
             row[rk] = f's:{rv}'
         elif isinstance(rv, int):
@@ -32,6 +34,8 @@ def uns_data(row: dict):
         v = tv[1]
         if t == 'dt':
             row[rk] = datetime.strptime(v, '%Y-%m-%d %H:%M:%S')
+        elif t == 'd':
+            row[rk] = date.strptime(v, '%Y-%m-%d')
         elif t == 's':
             row[rk] = v
         elif t == 'i':
@@ -53,6 +57,8 @@ def uns2_data(row: dict):
         v = tv[1]
         if t == 'dt':
             row[rk] = datetime.strptime(v, '%Y-%m-%d %H:%M:%S')
+        elif t == 'd':
+            row[rk] = date.strptime(v, '%Y-%m-%d')
         elif t == 's':
             row[rk] = v
         elif t == 'i':
