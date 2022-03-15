@@ -2,6 +2,7 @@
 /tasks/*.py
 /rt/
 /rtd/
+/tjd/
 __pycache__
 !__init__.py
 *_ui.py

@@ -12,6 +12,7 @@ python-dateutil==2.8.2
 shiboken6==6.2.2.1
 six==1.16.0
 toml==0.10.2
+typejson==0.0.2
 typing_extensions==4.0.1
 Whoosh==2.7.4
 win32-setctime==1.0.4

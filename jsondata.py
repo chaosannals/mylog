@@ -35,7 +35,7 @@ def uns_data(row: dict):
         if t == 'dt':
             row[rk] = datetime.strptime(v, '%Y-%m-%d %H:%M:%S')
         elif t == 'd':
-            row[rk] = date.strptime(v, '%Y-%m-%d')
+            row[rk] = datetime.strptime(v, '%Y-%m-%d').date()
         elif t == 's':
             row[rk] = v
         elif t == 'i':
