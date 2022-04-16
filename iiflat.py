@@ -1,3 +1,8 @@
+from datetime import date, datetime
+from decimal import Decimal
+from whoosh.fields import TEXT, KEYWORD, NUMERIC, DATETIME, BOOLEAN
+from zha import zh_analyzer
+
 def ii_flat(data: dict) -> dict:
     '''
     
@@ -49,6 +54,26 @@ def ii_flat(data: dict) -> dict:
                 r[k] = v
 
     return r
+
+def ii_filter(v):
+    if isinstance(v, list):
+        for i in v:
+            if isinstance(i, list):
+                return None, v
+        return KEYWORD(stored=False) if len(v) > 0 else None, v
+    if isinstance(v, int):
+        return NUMERIC(stored=False, numtype=int, bits=64), v
+    if isinstance(v, float):
+        return NUMERIC(stored=False, numtype=float, bits=64), v
+    if isinstance(v, Decimal):
+        return NUMERIC(stored=False, decimal_places=3), v
+    if isinstance(v, datetime) or isinstance(v, date):
+        return DATETIME(stored=False), v
+    if isinstance(v, bool):
+        return BOOLEAN(stored=False), v
+    if isinstance(v, str):
+        return TEXT(analyzer=zh_analyzer(), stored=False), v
+    return None, v
 
 
 def test():
@@ -119,7 +144,7 @@ def test():
     }
     rs = ii_flat(a)
     for k, v in rs.items():
-        print(k, ' => ', v)
+        print(k, ' => ', ii_filter(v))
 
 if '__main__' == __name__:
     test()
